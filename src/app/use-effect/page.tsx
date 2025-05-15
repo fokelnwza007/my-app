@@ -1,47 +1,48 @@
 "use client";
-
-import Footer from "@/components/Footer";
-import MenuBar from "@/components/MenuBar";
-import axios from "axios";
 import { useEffect, useState } from "react";
+import axios from "axios";
+import MenuBar from "@/components/MenuBar";
+import Footer from "@/components/Footer";
+import MovieCard from "@/components/MovieCard"; // หรือ TvCard ถ้าคุณเปลี่ยนชื่อ
 
-export default function UseEffect() {
-  const [movieList, setMovieList] = useState({});
+interface TvShow {
+  id: number;
+  name: string;
+  overview: string;
+  poster_path: string;
+}
+
+export default function UseEffectPage() {
+  const [tvList, setTvList] = useState<TvShow[]>([]);
 
   useEffect(() => {
     axios
       .get(
-        "https://api.themoviedb.org/3/trending/all/week?api_key=229a6a0f891df5bf1176a4668af885c6"
+        "https://api.themoviedb.org/3/trending/tv/week?api_key=229a6a0f891df5bf1176a4668af885c6"
       )
       .then((response) => {
-        console.log(response)
-        setMovieList(response.data.results);
+        setTvList(response.data.results);
+      })
+      .catch(() => {
+        alert("เกิดข้อผิดพลาดในการดึงข้อมูล");
       });
-
   }, []);
-  
 
   return (
     <div>
-      <MenuBar page="เรียนรู้ UseEffect" />
-
-      {movieList.map((movie,index) =>(
-      <div className="bg-amber-300">
-        <img 
-        src="https://image.tmdb.org/t/p/w500" {movie.poster_path}
-        alt="{movie.title}"
-        />
-        <h2 className="text-center">{movie.title}</h2>
-        <p className="text-center">{movie.overview}</p>
-        
-
-
-
+      <MenuBar page={"รายการทีวีที่กำลังมาแรง"} />
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+        {tvList.map((tv) => (
+          <MovieCard
+            key={tv.id}
+            name={tv.name}
+            title={""}
+            description={tv.overview}
+            image={tv.poster_path}
+          />
+        ))}
       </div>
-      ))}
-
       <Footer />
     </div>
   );
 }
-
